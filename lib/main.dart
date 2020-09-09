@@ -39,7 +39,6 @@ class LoginPageState extends State<LoginPage>
 
   @override
   Widget build(BuildContext context) {
-    
     return new Scaffold(
       backgroundColor: Colors.white,
       body: new Stack(fit: StackFit.expand, children: <Widget>[
@@ -61,7 +60,7 @@ class LoginPageState extends State<LoginPage>
           child: new Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              new FlutterLogo( 
+              new FlutterLogo(
                 size: 99,
               ),
               new Container(
@@ -93,21 +92,18 @@ class LoginPageState extends State<LoginPage>
                         splashColor: Colors.teal,
                         textColor: Colors.white,
                         child: Text("Login"),
-                        onPressed: (){
+                        onPressed: () {
                           Navigator.push(
-                            context, 
-                            MaterialPageRoute(
-                              builder:(context)=>Overview()
-                            ),
+                            context,
+                            MaterialPageRoute(builder: (context) => Overview()),
                           );
                         },
                       ),
                       new FlatButton(
-                        onPressed: (){},
-                        color: Colors.white,
-                        textColor: Colors.blue,
-                        child: Text("forgot password?")
-                      )
+                          onPressed: () {},
+                          color: Colors.white,
+                          textColor: Colors.blue,
+                          child: Text("forgot password?"))
                     ],
                   ),
                 ),
