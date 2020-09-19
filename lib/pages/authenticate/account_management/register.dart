@@ -43,7 +43,7 @@ class _RegisterState extends State<Register> {
               new Container(
                 padding: const EdgeInsets.all(40.0),
                 child: new Form(
-                  autovalidate: true,
+                  autovalidateMode:AutovalidateMode.always,
                   child: new Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
@@ -79,29 +79,28 @@ class _RegisterState extends State<Register> {
                         padding: const EdgeInsets.only(top: 60.0),
                       ),
                       RaisedButton(
-                        child: Text("Register"),
-                        onPressed: () async {
-                          dynamic response =
-                              await _auth.createUserWithEmailAndPassword(
-                                  email, password);
-                          if (response == null) {
-                            showSimpleNotification(
-                              Text("Registration Failed"),
-                              background: Colors.blue[400],
-                            );
-                          } else {
-                            showSimpleNotification(
-                              Text("Registration Success!"),
-                              background: Colors.blue[400],
-                            );
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => LoginPage()),
-                            );
-                          }
-                        }
-                      )
+                          child: Text("Register"),
+                          onPressed: () async {
+                            if (password != password2) {
+                              toast('Passwords do not match',
+                                  duration: Toast.LENGTH_LONG);
+                            } else {
+                              dynamic response =
+                                  await _auth.createUserWithEmailAndPassword(
+                                      email, password);
+                              if (response == null) {
+                                //handled in auth.dart
+                              } else {
+                                toast('Registration Success',
+                                    duration: Toast.LENGTH_LONG);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginPage()),
+                                );
+                              }
+                            }
+                          })
                     ],
                   ),
                 ),

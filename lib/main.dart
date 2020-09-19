@@ -5,7 +5,6 @@ import 'package:overlay_support/overlay_support.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  kNotificationDuration = const Duration(milliseconds: 2500);//notification display time
   runApp(MyApp());
 }
 
@@ -33,7 +32,7 @@ class MyApp extends StatelessWidget {
         }
 
         // Otherwise, show something whilst waiting for initialization to complete
-        print("loading");
+        print("loading"); //change this and container() to loading screen later
         return Container();
       },
     );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:udown/pages/authenticate/registration_page/register.dart';
+import 'package:overlay_support/overlay_support.dart';
+import 'package:udown/pages/authenticate/account_management/forgot_password.dart';
+import 'package:udown/pages/authenticate/account_management/register.dart';
 import 'package:udown/pages/home/overview.dart';
 import 'package:udown/services/auth.dart';
 
@@ -54,13 +56,15 @@ class LoginPageState extends State<LoginPage>
           child: new Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              new FlutterLogo(
-                size: 99,
+              new Image(
+                height: 99,
+                width: 99,
+                image: AssetImage("assets/Logo.jpg"),
               ),
               new Container(
                 padding: const EdgeInsets.all(40.0),
                 child: new Form(
-                  autovalidate: true,
+                  autovalidateMode: AutovalidateMode.always,
                   child: new Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
@@ -83,8 +87,12 @@ class LoginPageState extends State<LoginPage>
                         keyboardType: TextInputType.text,
                       ),
                       new FlatButton(
-                          onPressed: () {},
-                          color: Colors.white,
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => ForgotPass())
+                            );
+                          },
                           textColor: Colors.blue,
                           child: Text("forgot password?")),
                       new Padding(
@@ -93,21 +101,24 @@ class LoginPageState extends State<LoginPage>
                       new MaterialButton(
                         height: 50.0,
                         minWidth: 150.0,
-                        color: Colors.green,
-                        splashColor: Colors.teal,
+                        color: Colors.blue[400],
                         textColor: Colors.white,
                         child: Text("Login"),
                         onPressed: () async {
                           dynamic user = await _auth.signInWithEmailAndPassword(
                               email, password);
                           if (user == null) {
-                            print('Wrong Username or Password');
+                            toast('Wrong Username or Password');
                           } else {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Overview()),
-                            );
+                            if (!user.emailVerified) {
+                              await user.sendEmailVerification();
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Overview()),
+                              );
+                            }
                           }
                         },
                       ),
@@ -116,7 +127,7 @@ class LoginPageState extends State<LoginPage>
                           children: <Widget>[
                             Text(
                               "Don't have an Account?",
-                              style: TextStyle(color: Colors.blue[400]),
+                              style: TextStyle(color: Colors.white),
                             ),
                             new FlatButton(
                                 onPressed: () {
@@ -126,7 +137,8 @@ class LoginPageState extends State<LoginPage>
                                         builder: (context) => Register()),
                                   );
                                 },
-                                child: Text("Sign up"))
+                                child: Text("Sign up",
+                                    style: TextStyle(color: Colors.blue[400])))
                           ])
                     ],
                   ),
