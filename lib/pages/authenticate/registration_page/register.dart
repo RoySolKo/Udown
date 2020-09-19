@@ -1,35 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:udown/pages/authenticate/registration_page/register.dart';
-import 'package:udown/pages/home/overview.dart';
+import 'package:udown/pages/authenticate/login.dart';
 import 'package:udown/services/auth.dart';
+import 'package:overlay_support/overlay_support.dart';
 
-class LoginPage extends StatefulWidget {
+class Register extends StatefulWidget {
   @override
-  State createState() => new LoginPageState();
+  _RegisterState createState() => _RegisterState();
 }
 
-class LoginPageState extends State<LoginPage>
-    with SingleTickerProviderStateMixin {
-  Animation<double> _iconAnimation;
-  AnimationController _iconAnimationController;
-
-  final AuthService _auth = AuthService();
-
+class _RegisterState extends State<Register> {
   String email;
   String password;
-
-  @override
-  void initState() {
-    super.initState();
-    _iconAnimationController = new AnimationController(
-        vsync: this, duration: new Duration(milliseconds: 3000));
-    _iconAnimation = new CurvedAnimation(
-      parent: _iconAnimationController,
-      curve: Curves.bounceOut,
-    );
-    _iconAnimation.addListener(() => this.setState(() {}));
-    _iconAnimationController.forward();
-  }
+  String password2;
+  final AuthService _auth = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -82,52 +65,43 @@ class LoginPageState extends State<LoginPage>
                         obscureText: true,
                         keyboardType: TextInputType.text,
                       ),
-                      new FlatButton(
-                          onPressed: () {},
-                          color: Colors.white,
-                          textColor: Colors.blue,
-                          child: Text("forgot password?")),
+                      new TextFormField(
+                        onChanged: (val) {
+                          setState(() => password2 = val);
+                        },
+                        decoration: new InputDecoration(
+                          labelText: "Renter Password",
+                        ),
+                        obscureText: true,
+                        keyboardType: TextInputType.text,
+                      ),
                       new Padding(
                         padding: const EdgeInsets.only(top: 60.0),
                       ),
-                      new MaterialButton(
-                        height: 50.0,
-                        minWidth: 150.0,
-                        color: Colors.green,
-                        splashColor: Colors.teal,
-                        textColor: Colors.white,
-                        child: Text("Login"),
+                      RaisedButton(
+                        child: Text("Register"),
                         onPressed: () async {
-                          dynamic user = await _auth.signInWithEmailAndPassword(
-                              email, password);
-                          if (user == null) {
-                            print('Wrong Username or Password');
+                          dynamic response =
+                              await _auth.createUserWithEmailAndPassword(
+                                  email, password);
+                          if (response == null) {
+                            showSimpleNotification(
+                              Text("Registration Failed"),
+                              background: Colors.blue[400],
+                            );
                           } else {
+                            showSimpleNotification(
+                              Text("Registration Success!"),
+                              background: Colors.blue[400],
+                            );
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => Overview()),
+                                  builder: (context) => LoginPage()),
                             );
                           }
-                        },
-                      ),
-                      new Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              "Don't have an Account?",
-                              style: TextStyle(color: Colors.blue[400]),
-                            ),
-                            new FlatButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Register()),
-                                  );
-                                },
-                                child: Text("Sign up"))
-                          ])
+                        }
+                      )
                     ],
                   ),
                 ),
