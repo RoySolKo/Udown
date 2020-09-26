@@ -1,39 +1,13 @@
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:udown/services/auth.dart';
+import 'package:udown/pages/home/widget_assets/menu_navigator.dart';
 
-// Example holidays
-Map<DateTime, List> _holidays = {
-  DateTime(2020, 1, 1): ['New Year\'s Day'],
-  DateTime(2019, 2, 14): ['Valentine\'s Day'],
-  DateTime(2019, 4, 21): ['Easter Sunday'],
-  DateTime(2019, 4, 22): ['Easter Monday'],
-};
-
-class Overview extends StatelessWidget {
+class Overview extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Table Calendar Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Table Calendar Demo'),
-    );
-  }
+  _OverviewState createState() => _OverviewState();
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
+class _OverviewState extends State<Overview> with TickerProviderStateMixin {
   Map<DateTime, List> _events;
   List _selectedEvents;
   AnimationController _animationController;
@@ -132,7 +106,13 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text('My Calender'),
+        actions: <Widget>[
+          DropMenu(),
+          Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, 14, 0)
+          )
+        ]
       ),
       body: Column(
         mainAxisSize: MainAxisSize.max,
@@ -155,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     return TableCalendar(
       calendarController: _calendarController,
       events: _events,
-      holidays: _holidays,
+      holidays: null,
       startingDayOfWeek: StartingDayOfWeek.monday,
       calendarStyle: CalendarStyle(
         selectedColor: Colors.deepOrange[400],
@@ -182,7 +162,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       locale: 'pl_PL',
       calendarController: _calendarController,
       events: _events,
-      holidays: _holidays,
+      holidays: null,
       initialCalendarFormat: CalendarFormat.month,
       formatAnimation: FormatAnimation.slide,
       startingDayOfWeek: StartingDayOfWeek.sunday,
@@ -302,19 +282,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   Widget _buildButtons() {
     final dateTime = _events.keys.elementAt(_events.length - 2);
-    final AuthService _auth = AuthService();
     return Column(
       children: <Widget>[
         Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            RaisedButton(
-              child: Text('Logout'),
-              onPressed: () {
-                _auth.signOut();
-              },
-            ),
             RaisedButton(
               child: Text('Month'),
               onPressed: () {

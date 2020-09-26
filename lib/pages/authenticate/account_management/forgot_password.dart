@@ -10,7 +10,7 @@ class ForgotPass extends StatefulWidget {
 
 class _ForgotPassState extends State<ForgotPass> {
 
-  String email;
+  String _email;
   final AuthService _auth = AuthService();
 
   @override
@@ -50,7 +50,7 @@ class _ForgotPassState extends State<ForgotPass> {
                     children: <Widget>[
                       TextFormField(
                         onChanged: (val) {
-                          setState(() => email = val);
+                          setState(() => _email = val);
                         },
                         decoration: InputDecoration(
                             labelText: "Enter Email", fillColor: Colors.white),
@@ -64,7 +64,7 @@ class _ForgotPassState extends State<ForgotPass> {
                         textColor: Colors.white,
                         child: Text("Send Verification Email"),
                         onPressed: () {
-                          _auth.resetPassword(email);
+                          _auth.resetPassword(_email);
                           toast('Verification Email Sent');
                           Navigator.pop(
                                 context,
