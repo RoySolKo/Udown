@@ -1,6 +1,7 @@
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:udown/pages/home/widget_assets/menu_navigator.dart';
+import 'package:udown/pages/home/dayview.dart';
 
 class Overview extends StatefulWidget {
   @override
@@ -17,7 +18,7 @@ class _OverviewState extends State<Overview> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     final _selectedDay = DateTime.now();
-
+    print(_selectedDay);
     _events = {
       _selectedDay.subtract(Duration(days: 30)): [
         'Event A0',
@@ -105,61 +106,24 @@ class _OverviewState extends State<Overview> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('My Calender'),
-        actions: <Widget>[
-          DropMenu(),
-          Padding(
-            padding: EdgeInsets.fromLTRB(0, 0, 14, 0)
-          )
-        ]
-      ),
+      appBar: AppBar(title: Text('My Calender'), actions: <Widget>[
+        DropMenu(),
+        Padding(padding: EdgeInsets.fromLTRB(0, 0, 6, 0))
+      ]),
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          // Switch out 2 lines below to play with TableCalendar's settings
-          //-----------------------
-          _buildTableCalendar(),
-          // _buildTableCalendarWithBuilders(),
-          const SizedBox(height: 8.0),
-          _buildButtons(),
-          const SizedBox(height: 8.0),
+          _buildTableCalendarWithBuilders(),
           Expanded(child: _buildEventList()),
         ],
       ),
     );
   }
 
-  // Simple TableCalendar configuration (using Styles)
-  Widget _buildTableCalendar() {
-    return TableCalendar(
-      calendarController: _calendarController,
-      events: _events,
-      holidays: null,
-      startingDayOfWeek: StartingDayOfWeek.monday,
-      calendarStyle: CalendarStyle(
-        selectedColor: Colors.deepOrange[400],
-        todayColor: Colors.deepOrange[200],
-        markersColor: Colors.brown[700],
-        outsideDaysVisible: false,
-      ),
-      headerStyle: HeaderStyle(
-        formatButtonTextStyle:
-            TextStyle().copyWith(color: Colors.white, fontSize: 15.0),
-        formatButtonDecoration: BoxDecoration(
-          color: Colors.deepOrange[400],
-          borderRadius: BorderRadius.circular(16.0),
-        ),
-      ),
-      onDaySelected: _onDaySelected,
-      onVisibleDaysChanged: _onVisibleDaysChanged,
-    );
-  }
-
   // More advanced TableCalendar configuration (using Builders & Styles)
   Widget _buildTableCalendarWithBuilders() {
     return TableCalendar(
-      locale: 'pl_PL',
+      locale: 'en_US',
       calendarController: _calendarController,
       events: _events,
       holidays: null,
@@ -190,7 +154,7 @@ class _OverviewState extends State<Overview> with TickerProviderStateMixin {
             child: Container(
               margin: const EdgeInsets.all(4.0),
               padding: const EdgeInsets.only(top: 5.0, left: 6.0),
-              color: Colors.deepOrange[300],
+              color: Colors.red[100],
               width: 100,
               height: 100,
               child: Text(
@@ -204,7 +168,7 @@ class _OverviewState extends State<Overview> with TickerProviderStateMixin {
           return Container(
             margin: const EdgeInsets.all(4.0),
             padding: const EdgeInsets.only(top: 5.0, left: 6.0),
-            color: Colors.amber[400],
+            color: Colors.green[100],
             width: 100,
             height: 100,
             child: Text(
@@ -253,10 +217,10 @@ class _OverviewState extends State<Overview> with TickerProviderStateMixin {
       decoration: BoxDecoration(
         shape: BoxShape.rectangle,
         color: _calendarController.isSelected(date)
-            ? Colors.brown[500]
+            ? Colors.blue[700]
             : _calendarController.isToday(date)
-                ? Colors.brown[300]
-                : Colors.blue[400],
+                ? Colors.blue[700]
+                : Colors.blueGrey[400],
       ),
       width: 16.0,
       height: 16.0,
@@ -265,7 +229,7 @@ class _OverviewState extends State<Overview> with TickerProviderStateMixin {
           '${events.length}',
           style: TextStyle().copyWith(
             color: Colors.white,
-            fontSize: 12.0,
+            fontSize: 16.0,
           ),
         ),
       ),
@@ -287,45 +251,8 @@ class _OverviewState extends State<Overview> with TickerProviderStateMixin {
         Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            RaisedButton(
-              child: Text('Month'),
-              onPressed: () {
-                setState(() {
-                  _calendarController.setCalendarFormat(CalendarFormat.month);
-                });
-              },
-            ),
-            RaisedButton(
-              child: Text('2 weeks'),
-              onPressed: () {
-                setState(() {
-                  _calendarController
-                      .setCalendarFormat(CalendarFormat.twoWeeks);
-                });
-              },
-            ),
-            RaisedButton(
-              child: Text('Week'),
-              onPressed: () {
-                setState(() {
-                  _calendarController.setCalendarFormat(CalendarFormat.week);
-                });
-              },
-            ),
-          ],
         ),
         const SizedBox(height: 8.0),
-        RaisedButton(
-          child: Text(
-              'Set day ${dateTime.day}-${dateTime.month}-${dateTime.year}'),
-          onPressed: () {
-            _calendarController.setSelectedDay(
-              DateTime(dateTime.year, dateTime.month, dateTime.day),
-              runCallback: true,
-            );
-          },
-        ),
       ],
     );
   }
@@ -343,6 +270,7 @@ class _OverviewState extends State<Overview> with TickerProviderStateMixin {
                 child: ListTile(
                   title: Text(event.toString()),
                   onTap: () => print('$event tapped!'),
+                  onLongPress: () => DayView(),
                 ),
               ))
           .toList(),

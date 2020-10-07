@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:udown/pages/authenticate/login.dart";
 import "package:udown/pages/home/overview.dart";
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:udown/pages/loading_page.dart';
 import 'package:udown/services/auth.dart';
 
 class Wrapper extends StatelessWidget {
@@ -17,7 +18,7 @@ class Wrapper extends StatelessWidget {
           }
           return Overview();
         } else {
-          return LoginPage();
+          return Loading();
         }
       },
     );

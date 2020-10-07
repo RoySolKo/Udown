@@ -94,7 +94,7 @@ class LoginPageState extends State<LoginPage>
                                     builder: (context) => ForgotPass()));
                           },
                           textColor: Colors.blue,
-                          child: Text("forgot password?")),
+                          child: Text("Forgot password?")),
                       Padding(
                         padding: const EdgeInsets.only(top: 60.0),
                       ),
@@ -105,11 +105,13 @@ class LoginPageState extends State<LoginPage>
                         textColor: Colors.white,
                         child: Text("Login"),
                         onPressed: () async {
-                          dynamic user = await _auth.signInWithEmailAndPassword(
-                              _email, _password);
+                          dynamic user = await _auth
+                              .signInWithEmailAndPassword(_email, _password);
+
                           if (user == null) {
                             toast('Wrong Username or Password');
                           } else {
+                            print(user);
                             if (!user.emailVerified) {
                               await user.sendEmailVerification();
                               toast('verification email sent');
@@ -124,6 +126,26 @@ class LoginPageState extends State<LoginPage>
                         },
                       ),
                       GoogleSignInButton(
+                        onPressed: () async {
+                          dynamic user = await _auth
+                              .signInWithEmailAndPassword("angelsmind123@gmail.com", "fataly12");
+
+                          if (user == null) {
+                            toast('Wrong Username or Password');
+                          } else {
+                            print(user);
+                            if (!user.emailVerified) {
+                              await user.sendEmailVerification();
+                              toast('verification email sent');
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Overview()),
+                              );
+                            }
+                          }
+                        },/*
                         onPressed: () {
                           _auth.signInWithGoogle().then((result) {
                             if (result != null) {
@@ -135,10 +157,10 @@ class LoginPageState extends State<LoginPage>
                                 ),
                               );
                             }
-                          });
-                        },
+                          });*/
+                    
+
                       ),
-                      MicrosoftSignInButton(onPressed: () {}),
                       Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[

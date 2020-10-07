@@ -153,6 +153,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.3.4"
+  flutter_spinkit:
+    dependency: "direct main"
+    description:
+      name: flutter_spinkit
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.1.2+1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -226,6 +233,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.2"
+  lunar_calendar_converter:
+    dependency: "direct main"
+    description:
+      name: lunar_calendar_converter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.4+1"
   matcher:
     dependency: transitive
     description:
@@ -267,7 +281,7 @@ packages:
       name: pedantic
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.8.0+1"
+    version: "1.9.2"
   platform_detect:
     dependency: transitive
     description:
