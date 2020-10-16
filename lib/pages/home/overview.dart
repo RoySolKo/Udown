@@ -1,102 +1,41 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:udown/services/auth.dart';
+import 'package:udown/pages/home/widget_assets/event.dart';
+import 'package:udown/pages/home/widget_assets/menu_navigator.dart';
+import 'package:udown/pages/home/dayview.dart';
+import 'package:udown/services/database.dart';
+import 'package:provider/provider.dart';
 
-// Example holidays
-Map<DateTime, List> _holidays = {
-  DateTime(2020, 1, 1): ['New Year\'s Day'],
-  DateTime(2019, 2, 14): ['Valentine\'s Day'],
-  DateTime(2019, 4, 21): ['Easter Sunday'],
-  DateTime(2019, 4, 22): ['Easter Monday'],
-};
-
-class Overview extends StatelessWidget {
+class Overview extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Table Calendar Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Table Calendar Demo'),
-    );
-  }
+  _OverviewState createState() => _OverviewState();
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
-  Map<DateTime, List> _events;
+class _OverviewState extends State<Overview> with TickerProviderStateMixin {
+  Map<DateTime, List> _events = Map();
   List _selectedEvents;
   AnimationController _animationController;
   CalendarController _calendarController;
+  //Provider.of<DatabaseServices>(context).;
 
   @override
   void initState() {
     super.initState();
     final _selectedDay = DateTime.now();
-
-    _events = {
-      _selectedDay.subtract(Duration(days: 30)): [
-        'Event A0',
-        'Event B0',
-        'Event C0'
-      ],
-      _selectedDay.subtract(Duration(days: 27)): ['Event A1'],
-      _selectedDay.subtract(Duration(days: 20)): [
-        'Event A2',
-        'Event B2',
-        'Event C2',
-        'Event D2'
-      ],
-      _selectedDay.subtract(Duration(days: 16)): ['Event A3', 'Event B3'],
-      _selectedDay.subtract(Duration(days: 10)): [
-        'Event A4',
-        'Event B4',
-        'Event C4'
-      ],
-      _selectedDay.subtract(Duration(days: 4)): [
-        'Event A5',
-        'Event B5',
-        'Event C5'
-      ],
-      _selectedDay.subtract(Duration(days: 2)): ['Event A6', 'Event B6'],
-      _selectedDay: ['Event A7', 'Event B7', 'Event C7', 'Event D7'],
-      _selectedDay.add(Duration(days: 1)): [
-        'Event A8',
-        'Event B8',
-        'Event C8',
-        'Event D8'
-      ],
-      _selectedDay.add(Duration(days: 3)):
-          Set.from(['Event A9', 'Event A9', 'Event B9']).toList(),
-      _selectedDay.add(Duration(days: 7)): [
-        'Event A10',
-        'Event B10',
-        'Event C10'
-      ],
-      _selectedDay.add(Duration(days: 11)): ['Event A11', 'Event B11'],
-      _selectedDay.add(Duration(days: 17)): [
-        'Event A12',
-        'Event B12',
-        'Event C12',
-        'Event D12'
-      ],
-      _selectedDay.add(Duration(days: 22)): ['Event A13', 'Event B13'],
-      _selectedDay.add(Duration(days: 26)): [
-        'Event A14',
-        'Event B14',
-        'Event C14'
-      ],
-    };
+    print(_selectedDay);
+    DatabaseServices().streamUserEvents().listen((query) {
+      query.docs.forEach((doc) {
+        DateTime startime =
+            DateTime.fromMillisecondsSinceEpoch(doc.data()['start'].seconds*1000);
+        print(startime);
+        String eventname = doc.data()['eventname'];
+        List eventlist = List();
+        eventlist.add(eventname);
+        _events[startime] = eventlist;
+      });
+    });
+    print(_events);
 
     _selectedEvents = _events[_selectedDay] ?? [];
     _calendarController = CalendarController();
@@ -131,58 +70,27 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(title: Text('My Calender'), actions: <Widget>[
+        DropMenu(),
+        Padding(padding: EdgeInsets.fromLTRB(0, 0, 6, 0))
+      ]),
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          // Switch out 2 lines below to play with TableCalendar's settings
-          //-----------------------
-          _buildTableCalendar(),
-          // _buildTableCalendarWithBuilders(),
-          const SizedBox(height: 8.0),
-          _buildButtons(),
-          const SizedBox(height: 8.0),
+          _buildTableCalendarWithBuilders(),
           Expanded(child: _buildEventList()),
         ],
       ),
     );
   }
 
-  // Simple TableCalendar configuration (using Styles)
-  Widget _buildTableCalendar() {
-    return TableCalendar(
-      calendarController: _calendarController,
-      events: _events,
-      holidays: _holidays,
-      startingDayOfWeek: StartingDayOfWeek.monday,
-      calendarStyle: CalendarStyle(
-        selectedColor: Colors.deepOrange[400],
-        todayColor: Colors.deepOrange[200],
-        markersColor: Colors.brown[700],
-        outsideDaysVisible: false,
-      ),
-      headerStyle: HeaderStyle(
-        formatButtonTextStyle:
-            TextStyle().copyWith(color: Colors.white, fontSize: 15.0),
-        formatButtonDecoration: BoxDecoration(
-          color: Colors.deepOrange[400],
-          borderRadius: BorderRadius.circular(16.0),
-        ),
-      ),
-      onDaySelected: _onDaySelected,
-      onVisibleDaysChanged: _onVisibleDaysChanged,
-    );
-  }
-
   // More advanced TableCalendar configuration (using Builders & Styles)
   Widget _buildTableCalendarWithBuilders() {
     return TableCalendar(
-      locale: 'pl_PL',
+      locale: 'en_US',
       calendarController: _calendarController,
       events: _events,
-      holidays: _holidays,
+      holidays: null,
       initialCalendarFormat: CalendarFormat.month,
       formatAnimation: FormatAnimation.slide,
       startingDayOfWeek: StartingDayOfWeek.sunday,
@@ -210,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             child: Container(
               margin: const EdgeInsets.all(4.0),
               padding: const EdgeInsets.only(top: 5.0, left: 6.0),
-              color: Colors.deepOrange[300],
+              color: Colors.red[100],
               width: 100,
               height: 100,
               child: Text(
@@ -224,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           return Container(
             margin: const EdgeInsets.all(4.0),
             padding: const EdgeInsets.only(top: 5.0, left: 6.0),
-            color: Colors.amber[400],
+            color: Colors.green[100],
             width: 100,
             height: 100,
             child: Text(
@@ -273,10 +181,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       decoration: BoxDecoration(
         shape: BoxShape.rectangle,
         color: _calendarController.isSelected(date)
-            ? Colors.brown[500]
+            ? Colors.blue[700]
             : _calendarController.isToday(date)
-                ? Colors.brown[300]
-                : Colors.blue[400],
+                ? Colors.blue[700]
+                : Colors.blueGrey[400],
       ),
       width: 16.0,
       height: 16.0,
@@ -285,7 +193,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           '${events.length}',
           style: TextStyle().copyWith(
             color: Colors.white,
-            fontSize: 12.0,
+            fontSize: 16.0,
           ),
         ),
       ),
@@ -297,63 +205,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       Icons.add_box,
       size: 20.0,
       color: Colors.blueGrey[800],
-    );
-  }
-
-  Widget _buildButtons() {
-    final dateTime = _events.keys.elementAt(_events.length - 2);
-    final AuthService _auth = AuthService();
-    return Column(
-      children: <Widget>[
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            RaisedButton(
-              child: Text('Logout'),
-              onPressed: () {
-                _auth.signOut();
-              },
-            ),
-            RaisedButton(
-              child: Text('Month'),
-              onPressed: () {
-                setState(() {
-                  _calendarController.setCalendarFormat(CalendarFormat.month);
-                });
-              },
-            ),
-            RaisedButton(
-              child: Text('2 weeks'),
-              onPressed: () {
-                setState(() {
-                  _calendarController
-                      .setCalendarFormat(CalendarFormat.twoWeeks);
-                });
-              },
-            ),
-            RaisedButton(
-              child: Text('Week'),
-              onPressed: () {
-                setState(() {
-                  _calendarController.setCalendarFormat(CalendarFormat.week);
-                });
-              },
-            ),
-          ],
-        ),
-        const SizedBox(height: 8.0),
-        RaisedButton(
-          child: Text(
-              'Set day ${dateTime.day}-${dateTime.month}-${dateTime.year}'),
-          onPressed: () {
-            _calendarController.setSelectedDay(
-              DateTime(dateTime.year, dateTime.month, dateTime.day),
-              runCallback: true,
-            );
-          },
-        ),
-      ],
     );
   }
 
@@ -370,6 +221,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 child: ListTile(
                   title: Text(event.toString()),
                   onTap: () => print('$event tapped!'),
+                  onLongPress: () => DayView(),
                 ),
               ))
           .toList(),

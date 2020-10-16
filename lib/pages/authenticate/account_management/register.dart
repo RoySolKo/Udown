@@ -9,9 +9,9 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  String email;
-  String password;
-  String password2;
+  String _email;
+  String _password;
+  String _password2;
   final AuthService _auth = AuthService();
 
   @override
@@ -49,7 +49,7 @@ class _RegisterState extends State<Register> {
                     children: <Widget>[
                       new TextFormField(
                         onChanged: (val) {
-                          setState(() => email = val);
+                          setState(() => _email = val);
                         },
                         decoration: new InputDecoration(
                             labelText: "Enter Email", fillColor: Colors.white),
@@ -57,7 +57,7 @@ class _RegisterState extends State<Register> {
                       ),
                       new TextFormField(
                         onChanged: (val) {
-                          setState(() => password = val);
+                          setState(() => _password = val);
                         },
                         decoration: new InputDecoration(
                           labelText: "Enter Password",
@@ -67,7 +67,7 @@ class _RegisterState extends State<Register> {
                       ),
                       new TextFormField(
                         onChanged: (val) {
-                          setState(() => password2 = val);
+                          setState(() => _password2 = val);
                         },
                         decoration: new InputDecoration(
                           labelText: "Renter Password",
@@ -81,13 +81,13 @@ class _RegisterState extends State<Register> {
                       RaisedButton(
                           child: Text("Register"),
                           onPressed: () async {
-                            if (password != password2) {
+                            if (_password != _password2) {
                               toast('Passwords do not match',
                                   duration: Toast.LENGTH_LONG);
                             } else {
                               dynamic response =
                                   await _auth.createUserWithEmailAndPassword(
-                                      email, password);
+                                      _email, _password);
                               if (response == null) {
                                 //handled in auth.dart
                               } else {
