@@ -13,69 +13,29 @@ class Overview extends StatefulWidget {
 }
 
 class _OverviewState extends State<Overview> with TickerProviderStateMixin {
-  Map<DateTime, List> _events;
+  Map<DateTime, List> _events = Map();
   List _selectedEvents;
   AnimationController _animationController;
   CalendarController _calendarController;
+  //Provider.of<DatabaseServices>(context).;
 
   @override
   void initState() {
     super.initState();
     final _selectedDay = DateTime.now();
     print(_selectedDay);
-    _events = {
-      _selectedDay.subtract(Duration(days: 30)): [
-        'Event A0',
-        'Event B0',
-        'Event C0'
-      ],
-      _selectedDay.subtract(Duration(days: 27)): ['Event A1'],
-      _selectedDay.subtract(Duration(days: 20)): [
-        'Event A2',
-        'Event B2',
-        'Event C2',
-        'Event D2'
-      ],
-      _selectedDay.subtract(Duration(days: 16)): ['Event A3', 'Event B3'],
-      _selectedDay.subtract(Duration(days: 10)): [
-        'Event A4',
-        'Event B4',
-        'Event C4'
-      ],
-      _selectedDay.subtract(Duration(days: 4)): [
-        'Event A5',
-        'Event B5',
-        'Event C5'
-      ],
-      _selectedDay.subtract(Duration(days: 2)): ['Event A6', 'Event B6'],
-      _selectedDay: ['Event A7', 'Event B7', 'Event C7', 'Event D7'],
-      _selectedDay.add(Duration(days: 1)): [
-        'Event A8',
-        'Event B8',
-        'Event C8',
-        'Event D8'
-      ],
-      _selectedDay.add(Duration(days: 3)):
-          Set.from(['Event A9', 'Event A9', 'Event B9']).toList(),
-      _selectedDay.add(Duration(days: 7)): [
-        'Event A10',
-        'Event B10',
-        'Event C10'
-      ],
-      _selectedDay.add(Duration(days: 11)): ['Event A11', 'Event B11'],
-      _selectedDay.add(Duration(days: 17)): [
-        'Event A12',
-        'Event B12',
-        'Event C12',
-        'Event D12'
-      ],
-      _selectedDay.add(Duration(days: 22)): ['Event A13', 'Event B13'],
-      _selectedDay.add(Duration(days: 26)): [
-        'Event A14',
-        'Event B14',
-        'Event C14'
-      ],
-    };
+    DatabaseServices().streamUserEvents().listen((query) {
+      query.docs.forEach((doc) {
+        DateTime startime =
+            DateTime.fromMillisecondsSinceEpoch(doc.data()['start'].seconds*1000);
+        print(startime);
+        String eventname = doc.data()['eventname'];
+        List eventlist = List();
+        eventlist.add(eventname);
+        _events[startime] = eventlist;
+      });
+    });
+    print(_events);
 
     _selectedEvents = _events[_selectedDay] ?? [];
     _calendarController = CalendarController();
@@ -109,29 +69,19 @@ class _OverviewState extends State<Overview> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final events = Provider.of<DatabaseServices>(context);
-    events.streamUserEvents().forEach((doc) {
-      print(doc.data());
-    });
-    return Provider<CalEvents>(
-      create: (context) => CalEvents(),
-      child: StreamProvider<DocumentSnapshot>.value(
-        value: DatabaseServices().streamUserEvents(),
-        child: Scaffold(
-          appBar: AppBar(title: Text('My Calender'), actions: <Widget>[
-            DropMenu(),
-            Padding(padding: EdgeInsets.fromLTRB(0, 0, 6, 0))
-          ]),
-          body: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              _buildTableCalendarWithBuilders(),
-              Expanded(child: _buildEventList()),
-            ],
-          ),
-        )
-        )
-        );
+    return Scaffold(
+      appBar: AppBar(title: Text('My Calender'), actions: <Widget>[
+        DropMenu(),
+        Padding(padding: EdgeInsets.fromLTRB(0, 0, 6, 0))
+      ]),
+      body: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          _buildTableCalendarWithBuilders(),
+          Expanded(child: _buildEventList()),
+        ],
+      ),
+    );
   }
 
   // More advanced TableCalendar configuration (using Builders & Styles)
@@ -255,19 +205,6 @@ class _OverviewState extends State<Overview> with TickerProviderStateMixin {
       Icons.add_box,
       size: 20.0,
       color: Colors.blueGrey[800],
-    );
-  }
-
-  Widget _buildButtons() {
-    final dateTime = _events.keys.elementAt(_events.length - 2);
-    return Column(
-      children: <Widget>[
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        ),
-        const SizedBox(height: 8.0),
-      ],
     );
   }
 

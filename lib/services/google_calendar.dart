@@ -2,7 +2,6 @@ import "package:googleapis_auth/auth_io.dart";
 import 'package:googleapis/calendar/v3.dart';
 import "package:http/http.dart" as http;
 import 'package:overlay_support/overlay_support.dart';
-import 'package:udown/pages/home/widget_assets/event.dart';
 import 'package:udown/services/database.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:udown/services/secret.dart';
@@ -55,7 +54,6 @@ class GoogleCalActions {
     } catch (e) {
       print(e);
       toast("credentials expired");
-      Secret().printCredentials();
       Secret().deleteCredentials();
       return getCalendars();
     }
@@ -67,18 +65,9 @@ class GoogleCalActions {
     try {
       var response = await connection.events.list(calendarId);
       DatabaseServices().updateUserEvents(response.items);
-      /*
-      response.items.forEach((Event event) {
-        DatabaseServices().updateUserEvents(
-        CalEvent(event.id,event.summary,event.start.dateTime,event.end.dateTime)
-
-        );
-      });
-      */
     } catch (e) {
       print('Error retrieving events: $e');
       toast("credentials expired");
-      Secret().printCredentials();
       Secret().deleteCredentials();
       getEvents(calendarId);
     }

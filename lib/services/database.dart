@@ -7,27 +7,31 @@ class DatabaseServices {
   final String uid = AuthService().getUserID();
   final CollectionReference users =
       FirebaseFirestore.instance.collection('users');
-  final CollectionReference events =
-      FirebaseFirestore.instance.collection('events');
-
+  
   void updateUserEvents(List<Event> eventlist) async {
     CalEvents newdata = CalEvents();
     eventlist.forEach((element) {
       EventDateTime start = element.start;
       EventDateTime end = element.end;
       CalEvent event;
-      if (start == null && end == null) {
-        event = CalEvent(element.id, element.summary);
+
+      if (end == null) {
       } else {
-        event = CalEvent(element.id, element.summary,
-            startime: start.dateTime, endtime: end.dateTime);
+        event = CalEvent(element.iCalUID, element.summary,
+            end: element.end.dateTime ?? element.end.date, start: start.dateTime ?? start.date);
+        newdata.addCalEvent(event);
+        users
+            .doc(uid)
+            .collection('events')
+            .doc(element.iCalUID)
+            .set(event.toJson());
       }
-      newdata.addCalEvent(event);
     });
-    users.doc(uid).set({'GoogEvents': newdata.toGoogJson()});
   }
 
-  Stream<DocumentSnapshot> streamUserEvents() {
-    return users.doc(uid).snapshots();
+  Stream<QuerySnapshot> streamUserEvents() {
+    final CollectionReference events = FirebaseFirestore.instance.collection('users').doc(uid).collection('events');
+
+    return events.snapshots();
   }
 }

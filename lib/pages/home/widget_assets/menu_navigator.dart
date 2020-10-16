@@ -34,10 +34,8 @@ class _DropMenuState extends State<DropMenu> {
       }
     } else if (choice == Constants.importOutlookCalendar) {
     } else if (choice == Constants.developerTestButton) {
-      Secret().printCredentials();
     }
     else if (choice == Constants.developerNotes) {
-      Secret().printCredentials();
     }
   }
 

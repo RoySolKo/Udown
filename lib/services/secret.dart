@@ -67,8 +67,9 @@ class Secret {
     _storage.delete(key: "refreshToken");
   }
 
-  void printCredentials() async {
-    Future<Map<String, String>> keys = _storage.readAll().then((value) {
+  //for debugging
+  void _printCredentials() async {
+    _storage.readAll().then((value) {
       var mapInJsonString = json.encode(value);
       JsonEncoder encoder = new JsonEncoder.withIndent(' ');
       String prettyprint = encoder.convert(mapInJsonString);

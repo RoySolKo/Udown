@@ -10,7 +10,7 @@ class CalEvents {
   Map<String, Object> toGoogJson() {
     final Map<String, Object> _json = Map<String, Object>();
     allevents.forEach((element) {
-      _json[element.googleid]=element.toJson();
+      _json[element.iCalUID]=element.toJson();
     });
     return _json;
   }
@@ -25,29 +25,26 @@ Properties you can get from google for each event
 attendees, created, creator, end, etag, extendedProperties, htmlLink, iCalUID, id, kind, 
 organizer, reminders, sequence, start, status, summary, updated, description, location, transparency, visibility
 */
+//iCalUID endUnspecified
 class CalEvent {
-  String googleid; //id:
+  String iCalUID; //iCalUID :
   String eventname; //summary: TEST EVENT
-  DateTime startime; //start: {dateTime: 2020-11-07T11:00:00.000Z}
-  DateTime endtime; //end: {date: 2020-10-1
+  DateTime start; //start: {dateTime: 2020-11-07T11:00:00.000Z}
+  DateTime end; //end: {date: 2020-10-1
 
-  CalEvent(this.googleid, this.eventname, {this.startime, this.endtime});
+  CalEvent(this.iCalUID, this.eventname, {this.end, this.start});
 
   Map<String, Object> toJson() {
-    final Map<String, Object> _json =
-        new Map<String, Object>();
-    /*
-    if (googleid != null) {
-      _json["googleid"] = this.googleid;
-    }*/
+    
+    final Map<String, Object> _json = new Map<String, Object>();
     if (eventname != null) {
       _json["eventname"] = this.eventname;
     }
-    if (startime != null) {
-      _json["startime"] = this.startime;
+    if (start != null) {
+      _json["start"] = this.start;
     }
-    if (endtime != null) {
-      _json["endtime"] = this.endtime;
+    if (end != null) {
+      _json["end"] = this.end;
     }
 
     return _json;

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:googleapis/calendar/v3.dart' as goog;
 import 'package:udown/services/google_calendar.dart';
 
 class Checklist extends StatefulWidget {
@@ -56,7 +55,8 @@ class _ChecklistState extends State<Checklist> {
                       onPressed: () {
                         checks.forEach((key, value) {
                           if (value) {
-                            GoogleCalActions().getEvents(map[key]);                 
+                            GoogleCalActions().getEvents(map[key]);
+                            Navigator.of(context).pop();              
                           }
                         });
                       }))
