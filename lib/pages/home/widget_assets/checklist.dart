@@ -1,25 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:googleapis/calendar/v3.dart' as goog;
+import 'package:udown/services/google_calendar.dart';
 
 class Checklist extends StatefulWidget {
-  final List<String> list;
-  Checklist({Key key, @required this.list}) : super(key: key);
+  final Map map;
+  Checklist({Key key, @required this.map}) : super(key: key);
 
   @override
-  _ChecklistState createState() => _ChecklistState(list);
+  _ChecklistState createState() => _ChecklistState(map);
 }
 
 class _ChecklistState extends State<Checklist> {
-  List<String> list;
-  _ChecklistState(this.list);
+  Map map;
+  _ChecklistState(this.map);
   List<Widget> checkboxes = List();
   Map<String, bool> checks = Map();
+  List<String> calendarList = List();
 
   @override
   void initState() {
     super.initState();
     if (checkboxes.isEmpty) {
-      for (String element in list) {
-        checkboxes.add(MyCheckBox(element, setBool));
+      map.keys.forEach((element) {
+        calendarList.add(element);
+      });
+      for (String stuff in calendarList) {
+        checkboxes.add(MyCheckBox(stuff, setBool));
       }
     }
   }
@@ -48,8 +54,11 @@ class _ChecklistState extends State<Checklist> {
                   child: FlatButton(
                       child: Text("Confirm"),
                       onPressed: () {
-                        print("XXXXX");
-                        print(checks);
+                        checks.forEach((key, value) {
+                          if (value) {
+                            GoogleCalActions().getEvents(map[key]);                 
+                          }
+                        });
                       }))
             ])
           ],

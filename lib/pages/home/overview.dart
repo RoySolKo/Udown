@@ -1,7 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/material.dart';
+import 'package:udown/pages/home/widget_assets/event.dart';
 import 'package:udown/pages/home/widget_assets/menu_navigator.dart';
 import 'package:udown/pages/home/dayview.dart';
+import 'package:udown/services/database.dart';
+import 'package:provider/provider.dart';
 
 class Overview extends StatefulWidget {
   @override
@@ -105,19 +109,29 @@ class _OverviewState extends State<Overview> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('My Calender'), actions: <Widget>[
-        DropMenu(),
-        Padding(padding: EdgeInsets.fromLTRB(0, 0, 6, 0))
-      ]),
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          _buildTableCalendarWithBuilders(),
-          Expanded(child: _buildEventList()),
-        ],
-      ),
-    );
+    final events = Provider.of<DatabaseServices>(context);
+    events.streamUserEvents().forEach((doc) {
+      print(doc.data());
+    });
+    return Provider<CalEvents>(
+      create: (context) => CalEvents(),
+      child: StreamProvider<DocumentSnapshot>.value(
+        value: DatabaseServices().streamUserEvents(),
+        child: Scaffold(
+          appBar: AppBar(title: Text('My Calender'), actions: <Widget>[
+            DropMenu(),
+            Padding(padding: EdgeInsets.fromLTRB(0, 0, 6, 0))
+          ]),
+          body: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              _buildTableCalendarWithBuilders(),
+              Expanded(child: _buildEventList()),
+            ],
+          ),
+        )
+        )
+        );
   }
 
   // More advanced TableCalendar configuration (using Builders & Styles)

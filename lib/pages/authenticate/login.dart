@@ -105,13 +105,11 @@ class LoginPageState extends State<LoginPage>
                         textColor: Colors.white,
                         child: Text("Login"),
                         onPressed: () async {
-                          dynamic user = await _auth
-                              .signInWithEmailAndPassword(_email, _password);
-
+                          dynamic user = await _auth.signInWithEmailAndPassword(
+                              _email, _password);
                           if (user == null) {
                             toast('Wrong Username or Password');
                           } else {
-                            print(user);
                             if (!user.emailVerified) {
                               await user.sendEmailVerification();
                               toast('verification email sent');
@@ -127,9 +125,9 @@ class LoginPageState extends State<LoginPage>
                       ),
                       GoogleSignInButton(
                         onPressed: () async {
-                          dynamic user = await _auth
-                              .signInWithEmailAndPassword("angelsmind123@gmail.com", "fataly12");
-
+                          dynamic user = await _auth.signInWithEmailAndPassword(
+                              "angelsmind123@gmail.com", "test12");
+                            print(user);
                           if (user == null) {
                             toast('Wrong Username or Password');
                           } else {
@@ -145,7 +143,7 @@ class LoginPageState extends State<LoginPage>
                               );
                             }
                           }
-                        },/*
+                        }, /*
                         onPressed: () {
                           _auth.signInWithGoogle().then((result) {
                             if (result != null) {
@@ -158,8 +156,6 @@ class LoginPageState extends State<LoginPage>
                               );
                             }
                           });*/
-                    
-
                       ),
                       Row(
                           mainAxisAlignment: MainAxisAlignment.center,

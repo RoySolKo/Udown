@@ -2,10 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:udown/pages/wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:provider/provider.dart';
+import 'package:udown/services/auth.dart';
+import 'package:udown/services/database.dart';
+import 'package:udown/services/secret.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp());
+  runApp(MultiProvider(
+      providers: [
+        Provider<AuthService>(create: (_) => AuthService()),
+        Provider<Secret>(create: (_) => Secret()),
+        Provider<DatabaseServices>(create: (_) => DatabaseServices())],
+      child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

@@ -4,12 +4,13 @@ import "package:udown/pages/home/overview.dart";
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:udown/pages/loading_page.dart';
 import 'package:udown/services/auth.dart';
+import 'package:provider/provider.dart';
 
 class Wrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User>(
-      stream: AuthService().auth.authStateChanges(),
+      stream: Provider.of<AuthService>(context).auth.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
           User user = snapshot.data;

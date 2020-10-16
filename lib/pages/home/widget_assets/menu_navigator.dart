@@ -5,7 +5,6 @@ import 'package:udown/pages/loading_page.dart';
 import 'package:udown/services/auth.dart';
 import 'package:udown/services/google_calendar.dart';
 import 'package:udown/services/secret.dart';
-import 'package:provider/provider.dart';
 
 class DropMenu extends StatefulWidget {
   @override
@@ -24,32 +23,20 @@ class _DropMenuState extends State<DropMenu> {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => LoginPage()));
     } else if (choice == Constants.importGoogleCalendar) {
-      List<String> calendarlist = await GoogleCalActions().getCalendars();
-      if (calendarlist != null) {
+      Map calendarMap = await GoogleCalActions().getCalendars();
+      if (calendarMap != null) {
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => Checklist(
-                      list: calendarlist,
+                      map: calendarMap,
                     )));
       }
-
-      /*
-      GoogleCalActions().importCalendar().then((calendarlist) {
-        print("menunav " + calendarlist.toString());
-        if (calendarlist != null) {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => Checklist(
-                        list: [calendarlist],
-                      )));
-      });
-      */
-
     } else if (choice == Constants.importOutlookCalendar) {
-    } else if (choice == Constants.test) {
-      Secret().deleteCredentials();
+    } else if (choice == Constants.developerTestButton) {
+      Secret().printCredentials();
+    }
+    else if (choice == Constants.developerNotes) {
       Secret().printCredentials();
     }
   }
@@ -76,13 +63,15 @@ class Constants {
   static const String importGoogleCalendar = 'Import Google Calendar';
   static const String importOutlookCalendar =
       'Import Outlook Calendar (coming soon)';
-  static const String test = 'test various';
+  static const String developerTestButton = 'Developer Test Button';
+  static const String developerNotes = 'Developer Notes';
 
   static const List<String> choices = <String>[
-    test,
+    developerTestButton,
     importGoogleCalendar,
     importOutlookCalendar,
     settings,
+    developerNotes,
     signOut
   ];
 }

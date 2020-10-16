@@ -2,6 +2,8 @@ import "package:googleapis_auth/auth_io.dart";
 import 'package:googleapis/calendar/v3.dart';
 import "package:http/http.dart" as http;
 import 'package:overlay_support/overlay_support.dart';
+import 'package:udown/pages/home/widget_assets/event.dart';
+import 'package:udown/services/database.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:udown/services/secret.dart';
 
@@ -20,8 +22,8 @@ class GoogleCalActions {
           await clientViaUserConsent(ClientId(_clientId, ""), _scopes, (url) {
         //Open Url in Browser
         launch(url);
+        closeWebView();
       });
-      closeWebView();
       //Save Credentials
       Secret().saveCredentials(authClient.credentials.accessToken,
           authClient.credentials.refreshToken);
@@ -29,25 +31,25 @@ class GoogleCalActions {
     } else {
       print(credentials["expiry"]);
       //Already authenticated
-      return authenticatedClient(
-          http.Client(),
+      return autoRefreshingClient(
+          ClientId(_clientId, ""),
           AccessCredentials(
               AccessToken(credentials["type"], credentials["data"],
                   DateTime.tryParse(credentials["expiry"])),
               credentials["refreshToken"],
-              _scopes));
+              _scopes),http.Client());
     }
   }
 
-  Future<List<String>> getCalendars() async {
+  Future<Map> getCalendars() async {
     var client = await getAuth();
     var connection = CalendarApi(client);
-    List<String> calendarlist = List();
+    Map<String, String> calendarlist = Map();
     try {
       CalendarList response =
           await connection.calendarList.list(showHidden: true);
       response.items.forEach((element) {
-        calendarlist.add(element.summary);
+        calendarlist[element.summary] = element.id;
       });
       return calendarlist;
     } catch (e) {
@@ -57,21 +59,64 @@ class GoogleCalActions {
       Secret().deleteCredentials();
       return getCalendars();
     }
-    /*
-    connection.calendarList
-        .list(showHidden: true)
-        .then((CalendarList response) {
-      response.items.forEach((element) {
-        calendarlist.add(element.summary);
+  }
+
+  void getEvents(String calendarId) async {
+    var client = await getAuth();
+    var connection = CalendarApi(client);
+    try {
+      var response = await connection.events.list(calendarId);
+      DatabaseServices().updateUserEvents(response.items);
+      /*
+      response.items.forEach((Event event) {
+        DatabaseServices().updateUserEvents(
+        CalEvent(event.id,event.summary,event.start.dateTime,event.end.dateTime)
+
+        );
       });
-    }).then((_) {
-      print("api " + calendarlist.toString());
-      return calendarlist;
-    }).catchError((e) {
-      print(e);
+      */
+    } catch (e) {
+      print('Error retrieving events: $e');
+      toast("credentials expired");
+      Secret().printCredentials();
       Secret().deleteCredentials();
-      return importCalendar();
-    });
-    return null;*/
+      getEvents(calendarId);
+    }
+  }
+
+  Future<void> insertEvent(Event event) async {
+    var client = await getAuth();
+    var connection = CalendarApi(client);
+    try {
+      String calendarId = "primary";
+      connection.events.insert(event, calendarId).then((value) {
+        print("ADDEDDD_________________${value.status}");
+        if (value.status == "confirmed") {
+          print('Event added in google calendar');
+        } else {
+          print("Unable to add event in google calendar");
+        }
+      });
+    } catch (e) {
+      print('Error creating event $e');
+    }
+  }
+
+  Future<void> deleteEvent(String calendarId, String eventId) async {
+    var client = await getAuth();
+    var connection = CalendarApi(client);
+    try {
+      String calendarId = "primary";
+      connection.events.delete(calendarId, eventId).then((value) {
+        print("deleted_________________${value.status}");
+        if (value.status == "confirmed") {
+          print('Event deleted in google calendar');
+        } else {
+          print("Unable to delete event in google calendar");
+        }
+      });
+    } catch (e) {
+      print('Error deleting event $e');
+    }
   }
 }
