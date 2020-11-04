@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:udown/pages/authenticate/login.dart';
+import 'package:udown/pages/home/widget_assets/DeveloperNotes.dart';
 import 'package:udown/pages/home/widget_assets/checklist.dart';
 import 'package:udown/pages/loading_page.dart';
 import 'package:udown/services/auth.dart';
@@ -16,7 +18,6 @@ class _DropMenuState extends State<DropMenu> {
 
   void choiceAction(String choice) async {
     if (choice == Constants.settings) {
-      print('Settings');
     } else if (choice == Constants.signOut) {
       auth.signOut();
       auth.signOutGoogle();
@@ -34,8 +35,10 @@ class _DropMenuState extends State<DropMenu> {
       }
     } else if (choice == Constants.importOutlookCalendar) {
     } else if (choice == Constants.developerTestButton) {
-    }
-    else if (choice == Constants.developerNotes) {
+       Navigator.push(
+          context, MaterialPageRoute(builder: (context) => Loading()));
+    } else if (choice == Constants.developerNotes) {Navigator.push(
+          context, MaterialPageRoute(builder: (context) => DeveloperNotes()));
     }
   }
 
@@ -56,7 +59,7 @@ class _DropMenuState extends State<DropMenu> {
 }
 
 class Constants {
-  static const String settings = 'Settings';
+  static const String settings = 'Settings(Dark Mode Coming Soon)';
   static const String signOut = 'Sign out';
   static const String importGoogleCalendar = 'Import Google Calendar';
   static const String importOutlookCalendar =

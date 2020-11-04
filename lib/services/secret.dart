@@ -2,6 +2,7 @@ import "dart:convert";
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:googleapis_auth/auth_io.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 
 class Secret {
   // Create storage
@@ -75,5 +76,15 @@ class Secret {
       String prettyprint = encoder.convert(mapInJsonString);
       debugPrint(prettyprint);
     });
+  }
+}
+
+class RemoteConfigs {
+  Future<String> getKey(String key) async {
+    final RemoteConfig remoteConfig = await RemoteConfig.instance;
+    await remoteConfig.fetch(expiration: const Duration(hours: 1));
+    await remoteConfig.activateFetched();
+    var response = remoteConfig.getString(key);
+    return response;
   }
 }

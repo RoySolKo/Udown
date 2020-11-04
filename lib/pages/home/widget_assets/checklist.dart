@@ -52,13 +52,13 @@ class _ChecklistState extends State<Checklist> {
               Expanded(
                   child: FlatButton(
                       child: Text("Confirm"),
-                      onPressed: () {
+                      onPressed: () async{
                         checks.forEach((key, value) {
                           if (value) {
                             GoogleCalActions().getEvents(map[key]);
-                            Navigator.of(context).pop();              
                           }
                         });
+                        Navigator.of(context).pop();
                       }))
             ])
           ],

@@ -36,7 +36,9 @@ class LoginPageState extends State<LoginPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+        onWillPop: () async => false,
+        child:Scaffold(
       backgroundColor: Colors.white,
       body: Stack(fit: StackFit.expand, children: <Widget>[
         Image(
@@ -112,51 +114,32 @@ class LoginPageState extends State<LoginPage>
                           } else {
                             if (!user.emailVerified) {
                               await user.sendEmailVerification();
-                              toast('verification email sent');
+                              toast('Please Verify Email');
                             } else {
                               Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Overview()),
-                              );
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Overview()));
                             }
                           }
                         },
                       ),
+                      /*  
                       GoogleSignInButton(
                         onPressed: () async {
-                          dynamic user = await _auth.signInWithEmailAndPassword(
-                              "angelsmind123@gmail.com", "test12");
-                            print(user);
-                          if (user == null) {
-                            toast('Wrong Username or Password');
-                          } else {
-                            print(user);
-                            if (!user.emailVerified) {
-                              await user.sendEmailVerification();
-                              toast('verification email sent');
-                            } else {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Overview()),
-                              );
-                            }
-                          }
-                        }, /*
-                        onPressed: () {
                           _auth.signInWithGoogle().then((result) {
                             if (result != null) {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) {
                                     return Overview();
-                                  },
+                                          },
                                 ),
                               );
-                            }
-                          });*/
-                      ),
+                                }
+                          });
+                      }),
+                      */
                       Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
@@ -183,6 +166,6 @@ class LoginPageState extends State<LoginPage>
           ),
         ),
       ]),
-    );
+    ));
   }
 }

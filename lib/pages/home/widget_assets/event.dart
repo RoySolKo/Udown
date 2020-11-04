@@ -10,7 +10,7 @@ class CalEvents {
   Map<String, Object> toGoogJson() {
     final Map<String, Object> _json = Map<String, Object>();
     allevents.forEach((element) {
-      _json[element.iCalUID]=element.toJson();
+      _json[element.iCalUID] = element.toJson();
     });
     return _json;
   }
@@ -19,6 +19,7 @@ class CalEvents {
 
   List<CalEvent> findoverlap() {}
 }
+
 /* 
 Properties you can get from google for each event
 
@@ -35,7 +36,6 @@ class CalEvent {
   CalEvent(this.iCalUID, this.eventname, {this.end, this.start});
 
   Map<String, Object> toJson() {
-    
     final Map<String, Object> _json = new Map<String, Object>();
     if (eventname != null) {
       _json["eventname"] = this.eventname;
@@ -52,13 +52,32 @@ class CalEvent {
 }
 
 class EventCard extends StatefulWidget {
+  EventCard({@required this.event});
+  CalEvent event;
   @override
-  _EventCardState createState() => _EventCardState();
+  _EventCardState createState() => _EventCardState(event);
 }
 
 class _EventCardState extends State<EventCard> {
+  CalEvent event;
+  _EventCardState(this.event);
+
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(width: 0.8),
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      child: Column(
+        children:[ListTile(
+          title: Text(event.eventname),
+          onTap: () => print('$event tapped!'),
+        )
+        //onLongPress: () => edit event
+      ]),
+      
+    );
   }
 }

@@ -13,22 +13,22 @@ class GoogleCalActions {
   //request token with user login and consent
   Future<http.Client> getAuth() async {
     //Get Credentials
-    String _clientId = await Secret().read("google-client-id");
+    
+    String _clientId = await RemoteConfigs().getKey('google-client-id');
     var credentials = await Secret().getCredentials();
     if (credentials == null) {
       //Needs user authentication
       var authClient =
           await clientViaUserConsent(ClientId(_clientId, ""), _scopes, (url) {
-        //Open Url in Browser
-        launch(url);
-        closeWebView();
-      });
+          //Open Url in Browser
+          launch(url);
+          closeWebView();
+          });
       //Save Credentials
       Secret().saveCredentials(authClient.credentials.accessToken,
           authClient.credentials.refreshToken);
       return authClient;
     } else {
-      print(credentials["expiry"]);
       //Already authenticated
       return autoRefreshingClient(
           ClientId(_clientId, ""),
@@ -36,7 +36,8 @@ class GoogleCalActions {
               AccessToken(credentials["type"], credentials["data"],
                   DateTime.tryParse(credentials["expiry"])),
               credentials["refreshToken"],
-              _scopes),http.Client());
+              _scopes),
+          http.Client());
     }
   }
 
