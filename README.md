@@ -1,16 +1,20 @@
 # udown
 
-A new Flutter project.
+Flutter Project to Manage/Collaborate meetings and events.
 
-## Getting Started
+## Latest build
+https://drive.google.com/file/d/1rEo_uXNIL5_pmsB3rhyYPRVYt1B7aT3T/view?usp=sharing
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Current Features
+  -Import Google Calendar
+  -Login with Email/Password
+  -View Events in the Overview page
+  
+## Features to be built
+  -Day View
+  -Dark mode
+  -Add Events
+  -Edit Events
+  -Delete Events
+  -Import Outlook Calendar
+  -Suggest/Accept Meetings
